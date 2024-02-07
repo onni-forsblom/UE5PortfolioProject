@@ -9,12 +9,14 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "CustomCharacterMovementComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
 // AUE5PortfolioProjectCharacter
 
-AUE5PortfolioProjectCharacter::AUE5PortfolioProjectCharacter()
+AUE5PortfolioProjectCharacter::AUE5PortfolioProjectCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -66,6 +68,27 @@ void AUE5PortfolioProjectCharacter::BeginPlay()
 	}
 }
 
+bool AUE5PortfolioProjectCharacter::CanJumpInternal_Implementation() const
+{
+	// If the character has the custom movement component and can wall jump
+	// return true
+	UCustomCharacterMovementComponent* CustomMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
+	if (CustomMovementComponent
+		&& CustomMovementComponent->CanWallJump()){
+		return true;
+	}
+	return Super::CanJumpInternal_Implementation();
+}
+
+bool AUE5PortfolioProjectCharacter::ShouldMoveInFacedDirection(UCustomCharacterMovementComponent* CustomMovementComponent, FVector2D& MovementVector)
+{
+	// Return true if the character has performed a wall jump, they are still in character is in the air
+	// and the movement input has not been changed beyond a certain threshold
+	return CustomMovementComponent->WallJumpDirection != FVector::ZeroVector
+		&& CustomMovementComponent->IsFalling()
+		&& FVector2D::Distance(PreviousMovementVector.GetSafeNormal(), MovementVector.GetSafeNormal()) < MoveInFacedDirectionThreshold;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -80,9 +103,17 @@ void AUE5PortfolioProjectCharacter::SetupPlayerInputComponent(class UInputCompon
 
 		//Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUE5PortfolioProjectCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AUE5PortfolioProjectCharacter::HandleMoveStop);
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AUE5PortfolioProjectCharacter::Look);
+
+		// Teleporting & rewinding with the custom movement component
+		UCustomCharacterMovementComponent* CustomMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
+		if (CustomMovementComponent) {
+			EnhancedInputComponent->BindAction(TeleportAction, ETriggerEvent::Triggered, CustomMovementComponent, &UCustomCharacterMovementComponent::TryTeleport);
+			EnhancedInputComponent->BindAction(RewindAction, ETriggerEvent::Triggered, CustomMovementComponent, &UCustomCharacterMovementComponent::StartRewind);
+		}
 
 	}
 
@@ -92,6 +123,17 @@ void AUE5PortfolioProjectCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	// Check if movement input should just be added to the character's faced direction
+	// after performing a wall jump
+	UCustomCharacterMovementComponent* CustomMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
+	if (ShouldMoveInFacedDirection(CustomMovementComponent, MovementVector)) {
+		AddMovementInput(CustomMovementComponent->WallJumpDirection);
+		return;
+	}
+	
+	// When performing normal movement, make sure the wall jump direction is zeroed
+	CustomMovementComponent->WallJumpDirection = FVector::ZeroVector;
 
 	if (Controller != nullptr)
 	{
@@ -109,6 +151,15 @@ void AUE5PortfolioProjectCharacter::Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
+
+	// Store the movement vector for potential comparison later
+	PreviousMovementVector = MovementVector;
+}
+
+void AUE5PortfolioProjectCharacter::HandleMoveStop(const FInputActionValue& Value)
+{
+	// On stopping movement input, set the previous movement vector to zero
+	PreviousMovementVector = FVector2D::ZeroVector;
 }
 
 void AUE5PortfolioProjectCharacter::Look(const FInputActionValue& Value)
@@ -123,7 +174,3 @@ void AUE5PortfolioProjectCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
-
-
-
-
