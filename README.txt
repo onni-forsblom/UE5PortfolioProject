@@ -1,0 +1,1 @@
+A project by Onni Forsblom for showcasing some of my Unreal Engine development skills. Built on top of the third person template. 

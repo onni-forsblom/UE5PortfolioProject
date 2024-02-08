@@ -46,11 +46,16 @@ class AUE5PortfolioProjectCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* RewindAction;
 
+	/* The amount by which movement input can change before no longer following faced direction after a wall jump */
+	UPROPERTY(EditDefaultsOnly, Category = Input, meta = (ClampMin = "0"))
+	float MoveInFacedDirectionThreshold = 0.1f;
+
 protected:
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
+	/** Called for releasing movement input */
 	void HandleMoveStop(const FInputActionValue& Value);
 
 	/** Called for looking input */
@@ -71,9 +76,6 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "0"))
-	float MoveInFacedDirectionThreshold = 0.1f;
 
 private:
 

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (C) 2024 Onni Forsblom
 
 #pragma once
 
@@ -42,31 +42,40 @@ class UE5PORTFOLIOPROJECT_API UCustomCharacterMovementComponent : public UCharac
 	};
 	
 public:
-	UPROPERTY(EditDefaultsOnly)
+	/* Maximum teleport distance */
+	UPROPERTY(EditDefaultsOnly, Category = Teleportation)
 	float TeleportDistance = 1000;
 
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "0"))
+	/* Distance to check for land below when trying to teleport past objects */
+	UPROPERTY(EditDefaultsOnly, Category = Teleportation, meta = (ClampMin = "0"))
 	float LandCheckDistance = 3000;
 
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "0"))
+	/* Number of times the character's status is recorded per second */
+	UPROPERTY(EditDefaultsOnly, Category = Rewinding, meta = (ClampMin = "0"))
 	uint8 RewindCapturesPerSecond = 30;
 
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "0"))
+	/** The period of time in seconds for which to record data for rewinding */
+	UPROPERTY(EditDefaultsOnly, Category = Rewinding, meta = (ClampMin = "0"))
 	float RewindCaptureLengthSeconds = 2;
 
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "0"))
+	/* The time in seconds to perform a full rewind */
+	UPROPERTY(EditDefaultsOnly, Category = Rewinding, meta = (ClampMin = "0"))
 	float RewindFullPerformLengthSeconds = 2;
 
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "0"))
+	/* The minimum speed at which the character will be launched from a wall */
+	UPROPERTY(EditDefaultsOnly, Category = WallJumping, meta = (ClampMin = "0"))
 	float MinWallJumpSpeed = 150;
 
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "0"))
+	/* The multiple of which the wall jump angle will be */
+	UPROPERTY(EditDefaultsOnly, Category = WallJumping, meta = (ClampMin = "0"))
 	float WallJumpAngleFactor = 22.5f;
 
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "0", ClampMax="89.99999"))
+	/* The maximum angle which can be faced away from a wall to perform a wall jump */
+	UPROPERTY(EditDefaultsOnly, Category = WallJumping, meta = (ClampMin = "0", ClampMax="89.99999"))
 	float MaxWallJumpAngle = 78.75f;
 
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "1.005"))
+	/* The scale by which the character's capsule radius will be multiplied to check if they are close enough to the wall for a wall jump */
+	UPROPERTY(EditDefaultsOnly, Category = WallJumping, meta = (ClampMin = "1.005"))
 	float WallJumpCapsuleRadiusScale = 1.5f;
 
 	mutable FVector WallJumpDirection = FVector::ZeroVector;
