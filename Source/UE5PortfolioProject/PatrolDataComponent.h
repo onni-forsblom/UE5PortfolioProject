@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "NavFilters/NavigationQueryFilter.h"
 #include "PatrolDataComponent.generated.h"
 
 UENUM(BlueprintType)
@@ -44,6 +45,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditInstanceOnly)
 	bool bShouldPingPong = true;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UNavigationQueryFilter> NavQueryFilterClass;
 
 	// Sets default values for this component's properties
 	UPatrolDataComponent();
