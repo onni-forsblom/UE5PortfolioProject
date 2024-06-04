@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+ // Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -6,11 +6,12 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "CustomCharacterMovementComponent.h"
+#include "BaseCharacter.h"
 #include "UE5PortfolioProjectCharacter.generated.h"
 
 
 UCLASS(config=Game)
-class AUE5PortfolioProjectCharacter : public ACharacter
+class AUE5PortfolioProjectCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -21,6 +22,8 @@ class AUE5PortfolioProjectCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
+	class UAIPerceptionStimuliSourceComponent* AIStimuliSourceComponent;
 	
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))

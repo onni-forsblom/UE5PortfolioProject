@@ -10,6 +10,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "CustomCharacterMovementComponent.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include <Perception/AISense_Sight.h>
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -51,6 +53,10 @@ AUE5PortfolioProjectCharacter::AUE5PortfolioProjectCharacter(const FObjectInitia
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	AIStimuliSourceComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("AIStimuliSource"));
+	AIStimuliSourceComponent->RegisterForSense(UAISense_Sight::StaticClass());
+	AIStimuliSourceComponent->RegisterWithPerceptionSystem();
 }
 
 void AUE5PortfolioProjectCharacter::BeginPlay()
