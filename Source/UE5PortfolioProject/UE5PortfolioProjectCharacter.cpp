@@ -105,7 +105,12 @@ void AUE5PortfolioProjectCharacter::ShootProjectile()
 		+ SpawnRotation.Vector() * ProjectileSpawnLocationOffset.X
 		+ UKismetMathLibrary::GetRightVector(SpawnRotation) * ProjectileSpawnLocationOffset.Y
 		+ UKismetMathLibrary::GetUpVector(SpawnRotation) * ProjectileSpawnLocationOffset.Z;
-	GetWorld()->SpawnActor<AActor>(ProjectileActorClass, SpawnLocation, SpawnRotation);
+	
+	// Set this actor as the projectile's instigator
+	FActorSpawnParameters ActorSpawnParameters;
+	ActorSpawnParameters.Instigator = this;
+
+	GetWorld()->SpawnActor<AActor>(ProjectileActorClass, SpawnLocation, SpawnRotation, ActorSpawnParameters);
 }
 
 //////////////////////////////////////////////////////////////////////////
