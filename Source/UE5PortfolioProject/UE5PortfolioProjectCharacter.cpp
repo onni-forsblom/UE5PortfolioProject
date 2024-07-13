@@ -12,6 +12,7 @@
 #include "CustomCharacterMovementComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include <Perception/AISense_Sight.h>
+#include "Kismet/KismetMathLibrary.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -95,6 +96,18 @@ bool AUE5PortfolioProjectCharacter::ShouldMoveInFacedDirection(UCustomCharacterM
 		&& FVector2D::Distance(PreviousMovementVector.GetSafeNormal(), MovementVector.GetSafeNormal()) < MoveInFacedDirectionThreshold;
 }
 
+void AUE5PortfolioProjectCharacter::ShootProjectile()
+{
+	// Spawn the projectile in the direction of control rotation
+	// and in a certain location from this actor according to control rotation
+	FRotator SpawnRotation = GetControlRotation();
+	FVector SpawnLocation = GetActorLocation()
+		+ SpawnRotation.Vector() * ProjectileSpawnLocationOffset.X
+		+ UKismetMathLibrary::GetRightVector(SpawnRotation) * ProjectileSpawnLocationOffset.Y
+		+ UKismetMathLibrary::GetUpVector(SpawnRotation) * ProjectileSpawnLocationOffset.Z;
+	GetWorld()->SpawnActor<AActor>(ProjectileActorClass, SpawnLocation, SpawnRotation);
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -113,6 +126,9 @@ void AUE5PortfolioProjectCharacter::SetupPlayerInputComponent(class UInputCompon
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AUE5PortfolioProjectCharacter::Look);
+
+		//Shooting a projectile
+		EnhancedInputComponent->BindAction(ProjectileShootAction, ETriggerEvent::Triggered, this, &AUE5PortfolioProjectCharacter::ShootProjectile);
 
 		// Teleporting & rewinding with the custom movement component
 		UCustomCharacterMovementComponent* CustomMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());

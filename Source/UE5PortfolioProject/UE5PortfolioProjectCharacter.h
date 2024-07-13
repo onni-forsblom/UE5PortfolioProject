@@ -23,6 +23,14 @@ class AUE5PortfolioProjectCharacter : public ABaseCharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
+	/** Projectile to fire with projectile shoot action*/
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	TSubclassOf<AActor> ProjectileActorClass;
+
+	/** How far in each direction to spawn the projectile away from this actor (forwards, right & up) */
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
+	FVector ProjectileSpawnLocationOffset = FVector(0, 50, 75);
+
 	class UAIPerceptionStimuliSourceComponent* AIStimuliSourceComponent;
 	
 	/** MappingContext */
@@ -48,6 +56,10 @@ class AUE5PortfolioProjectCharacter : public ABaseCharacter
 	/** Rewind Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* RewindAction;
+
+	/* Projectile shooting Input Action*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* ProjectileShootAction;
 
 	/* The amount by which movement input can change before no longer following faced direction after a wall jump */
 	UPROPERTY(EditDefaultsOnly, Category = Input, meta = (ClampMin = "0"))
@@ -85,6 +97,8 @@ private:
 	virtual bool CanJumpInternal_Implementation() const;
 
 	bool ShouldMoveInFacedDirection(UCustomCharacterMovementComponent* CustomMovementComponent, FVector2D& MovementVector);
+
+	void ShootProjectile();
 
 	FVector2D PreviousMovementVector;
 };
