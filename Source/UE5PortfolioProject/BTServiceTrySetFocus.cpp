@@ -13,8 +13,14 @@ UBTServiceTrySetFocus::UBTServiceTrySetFocus()
 
 void UBTServiceTrySetFocus::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
+	AActor* ActorToFocusOn = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ActorToFocusOnKey.SelectedKeyName));
+
+	// If focus has already been set to the desired actor, do nothing
+	if (ActorToFocusOn == OwnerComp.GetAIOwner()->GetFocusActor()) {
+		return;
+	}
+
 	// If a valid actor is obtained with the blackboard key, set focus to it
 	// Else, clear focus
-	AActor* ActorToFocusOn = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ActorToFocusOnKey.SelectedKeyName));
 	ActorToFocusOn ? OwnerComp.GetAIOwner()->SetFocus(ActorToFocusOn) : OwnerComp.GetAIOwner()->ClearFocus(EAIFocusPriority::Gameplay);
 }
