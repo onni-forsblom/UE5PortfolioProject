@@ -1,8 +1,12 @@
 // Copyright (C) 2024 Onni Forsblom
 
 #include "GuardAIController.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AISenseConfig_Hearing.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Kismet/GameplayStatics.h"
+#include "BlackboardKeyNames.h"
+#include "SuspicionLevelEnum.h"
 
 AGuardAIController::AGuardAIController()
 {
@@ -13,6 +17,20 @@ AGuardAIController::AGuardAIController()
 	// Create and configure the senses
 	UAISenseConfig_Sight* SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("AISightConfig"));
 	AIPerceptionComponent->ConfigureSense(*SightConfig);
+
+	UAISenseConfig_Hearing* HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("AIHearingConfig"));
+	AIPerceptionComponent->ConfigureSense(*HearingConfig);
+}
+
+void AGuardAIController::HandleNoiseStimuli(FVector NoiseLocation)
+{
+	// If the AI is not suspicious of anything and a suspicious noise is heard,
+	// set the suspicion level to investigating distraction and the move to location
+	if (GetBlackboardComponent()->GetValueAsEnum(UBlackboardKeyNames::GetSuspicionLevelKeyName())
+		== ESuspicionLevel::Normal) {
+		GetBlackboardComponent()->SetValueAsEnum(UBlackboardKeyNames::GetSuspicionLevelKeyName(), ESuspicionLevel::InvestigatingDistraction);
+		GetBlackboardComponent()->SetValueAsVector(UBlackboardKeyNames::GetMoveToLocationKeyName(), NoiseLocation);
+	}
 }
 
 FGenericTeamId AGuardAIController::GetGenericTeamId() const

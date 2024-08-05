@@ -6,6 +6,7 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "SuspicionLevelEnum.h"
 
 UBTServiceSight::UBTServiceSight()
 {
@@ -59,6 +60,7 @@ void UBTServiceSight::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	switch (OwnerComp.GetBlackboardComponent()->GetValueAsEnum(SuspicionLevelKey.SelectedKeyName))
 	{
 	case ESuspicionLevel::Normal:
+	case ESuspicionLevel::InvestigatingDistraction:
 		// Start investigating a hostile if one is sighted when the suspicion level is normal
 		if (ClosestSightedHostileActor) {
 			OwnerComp.GetBlackboardComponent()->SetValueAsEnum(SuspicionLevelKey.SelectedKeyName, ESuspicionLevel::InvestigatingEnemy);

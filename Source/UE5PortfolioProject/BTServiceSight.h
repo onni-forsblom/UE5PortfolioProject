@@ -6,13 +6,6 @@
 #include "BehaviorTree/BTService.h"
 #include "BTServiceSight.generated.h"
 
-UENUM(BlueprintType)
-enum ESuspicionLevel : uint8 {
-	Normal,
-	InvestigatingEnemy,
-	EnemyClearlySpotted
-};
-
 /**
  * 
  */
