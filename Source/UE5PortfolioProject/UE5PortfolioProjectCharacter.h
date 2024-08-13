@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
-#include "CustomCharacterMovementComponent.h"
 #include "BaseCharacter.h"
 #include "UE5PortfolioProjectCharacter.generated.h"
 
@@ -17,11 +16,11 @@ class AUE5PortfolioProjectCharacter : public ABaseCharacter
 
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
+	TObjectPtr<class USpringArmComponent> CameraBoom;
 
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
+	TObjectPtr<class UCameraComponent> FollowCamera;
 
 	/** Projectile to fire with projectile shoot action*/
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
@@ -31,35 +30,35 @@ class AUE5PortfolioProjectCharacter : public ABaseCharacter
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	FVector ProjectileSpawnLocationOffset = FVector(0, 50, 75);
 
-	class UAIPerceptionStimuliSourceComponent* AIStimuliSourceComponent;
+	TObjectPtr<class UAIPerceptionStimuliSourceComponent> AIStimuliSourceComponent;
 	
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputMappingContext* DefaultMappingContext;
+	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* JumpAction;
+	TObjectPtr<class UInputAction> JumpAction;
 
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* MoveAction;
+	TObjectPtr<class UInputAction> MoveAction;
 
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* LookAction;
+	TObjectPtr<class UInputAction> LookAction;
 
 	/** Teleport Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* TeleportAction;
+	TObjectPtr<class UInputAction> TeleportAction;
 
 	/** Rewind Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* RewindAction;
+	TObjectPtr<class UInputAction> RewindAction;
 
 	/* Projectile shooting Input Action*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* ProjectileShootAction;
+	TObjectPtr<class UInputAction> ProjectileShootAction;
 
 	/* The amount by which movement input can change before no longer following faced direction after a wall jump */
 	UPROPERTY(EditDefaultsOnly, Category = Input, meta = (ClampMin = "0"))
@@ -96,7 +95,7 @@ private:
 
 	virtual bool CanJumpInternal_Implementation() const;
 
-	bool ShouldMoveInFacedDirection(UCustomCharacterMovementComponent* CustomMovementComponent, FVector2D& MovementVector);
+	bool ShouldMoveInFacedDirection(TObjectPtr<class UCustomCharacterMovementComponent> CustomMovementComponent, FVector2D& MovementVector);
 
 	void ShootProjectile();
 

@@ -11,7 +11,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "CustomCharacterMovementComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
-#include <Perception/AISense_Sight.h>
+#include "Perception/AISense_Sight.h"
 #include "Kismet/KismetMathLibrary.h"
 
 
@@ -66,9 +66,9 @@ void AUE5PortfolioProjectCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	if (TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		if (TObjectPtr<UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
@@ -79,17 +79,20 @@ bool AUE5PortfolioProjectCharacter::CanJumpInternal_Implementation() const
 {
 	// If the character has the custom movement component and can wall jump
 	// return true
-	UCustomCharacterMovementComponent* CustomMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
+	TObjectPtr<UCustomCharacterMovementComponent> CustomMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
 	if (CustomMovementComponent
 		&& CustomMovementComponent->CanWallJump()){
 		return true;
 	}
+
+
+	// Else, do the normal jump check
 	return Super::CanJumpInternal_Implementation();
 }
 
-bool AUE5PortfolioProjectCharacter::ShouldMoveInFacedDirection(UCustomCharacterMovementComponent* CustomMovementComponent, FVector2D& MovementVector)
+bool AUE5PortfolioProjectCharacter::ShouldMoveInFacedDirection(TObjectPtr<UCustomCharacterMovementComponent> CustomMovementComponent, FVector2D& MovementVector)
 {
-	// Return true if the character has performed a wall jump, they are still in character is in the air
+	// Return true if the character has performed a wall jump, they are still in the air
 	// and the movement input has not been changed beyond a certain threshold
 	return CustomMovementComponent->WallJumpDirection != FVector::ZeroVector
 		&& CustomMovementComponent->IsFalling()
@@ -153,7 +156,7 @@ void AUE5PortfolioProjectCharacter::Move(const FInputActionValue& Value)
 
 	// Check if movement input should just be added to the character's faced direction
 	// after performing a wall jump
-	UCustomCharacterMovementComponent* CustomMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
+	TObjectPtr<UCustomCharacterMovementComponent> CustomMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());
 	if (ShouldMoveInFacedDirection(CustomMovementComponent, MovementVector)) {
 		AddMovementInput(CustomMovementComponent->WallJumpDirection);
 		return;
