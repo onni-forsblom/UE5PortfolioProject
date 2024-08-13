@@ -29,15 +29,15 @@ private:
 
 	uint8 AIsActivelyPerceivingParent = 0;
 
-	class UCustomAIStimuliSourceComponent* AIStimuliSourceComponent;
+	TObjectPtr<class UCustomAIStimuliSourceComponent> AIStimuliSourceComponent;
 
-	class UCustomAIStimuliSourceComponent* ParentAIStimuliSourceComponent;
-
-	UPROPERTY(EditAnywhere)
-	class UShapeComponent* ShapeComponent;
+	TObjectPtr<class UCustomAIStimuliSourceComponent> ParentAIStimuliSourceComponent;
 
 	UPROPERTY(EditAnywhere)
-	class UNavModifierComponent* NavModifierComponent;
+	TObjectPtr<class UShapeComponent> ShapeComponent;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UNavModifierComponent> NavModifierComponent;
 
 	// NavArea class for where the AIs think the parent is
 	UPROPERTY(EditAnywhere)

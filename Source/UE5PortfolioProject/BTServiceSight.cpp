@@ -20,7 +20,7 @@ UBTServiceSight::UBTServiceSight()
 
 void UBTServiceSight::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	UAIPerceptionComponent* AIPerceptionComponent = OwnerComp.GetAIOwner()->GetAIPerceptionComponent();
+	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent = OwnerComp.GetAIOwner()->GetAIPerceptionComponent();
 
 	// If the perception component is invalid,
 	// do nothing
@@ -29,18 +29,18 @@ void UBTServiceSight::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	}
 
 	// Get an array of all sighted actors
-	TArray<AActor*> SightedActors;
+	TArray<TObjectPtr<AActor>> SightedActors;
 	AIPerceptionComponent->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), SightedActors);
 
 	// Get an array of all sighted hostile actors
-	TArray<AActor*> SightedHostileActors;
-	Algo::CopyIf(SightedActors, SightedHostileActors, [&OwnerComp](AActor* Actor) {
+	TArray<TObjectPtr<AActor>> SightedHostileActors;
+	Algo::CopyIf(SightedActors, SightedHostileActors, [&OwnerComp](TObjectPtr<AActor> Actor) {
 		return OwnerComp.GetAIOwner()->GetTeamAttitudeTowards(*Actor) == ETeamAttitude::Hostile;
 		});
 
 	// If at least one hostile was sighted, get the closest one and the distance to it
 	// and set the values for the detected hostile and the move to location
-	AActor* ClosestSightedHostileActor = nullptr;
+	TObjectPtr<AActor> ClosestSightedHostileActor = nullptr;
 	float DistanceToClosestActor = TNumericLimits<float>::Max();
 	if (!SightedHostileActors.IsEmpty()) {
 		ClosestSightedHostileActor = 

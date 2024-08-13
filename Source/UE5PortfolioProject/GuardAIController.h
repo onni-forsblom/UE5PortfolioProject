@@ -23,7 +23,7 @@ public:
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UAIPerceptionComponent* AIPerceptionComponent;
+	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent;
 
 private:
 

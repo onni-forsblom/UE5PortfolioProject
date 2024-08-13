@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "NavFilters/NavigationQueryFilter.h"
 #include "PatrolDataComponent.generated.h"
 
 UENUM(BlueprintType)
@@ -43,11 +42,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditInstanceOnly)
 	TArray<FPatrolSpotData> PatrolSpotsData;
 
-	UPROPERTY(BlueprintReadOnly, EditInstanceOnly)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	bool bShouldPingPong = true;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TSubclassOf<UNavigationQueryFilter> NavQueryFilterClass;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TSubclassOf<class UNavigationQueryFilter> NavQueryFilterClass;
 
 	// Sets default values for this component's properties
 	UPatrolDataComponent();
