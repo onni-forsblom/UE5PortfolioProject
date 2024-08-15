@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "SuspicionLevelEnum.h"
+#include "NavigationSystem.h"
 
 UBTServiceSight::UBTServiceSight()
 {
@@ -38,19 +39,29 @@ void UBTServiceSight::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 		return OwnerComp.GetAIOwner()->GetTeamAttitudeTowards(*Actor) == ETeamAttitude::Hostile;
 		});
 
-	// If at least one hostile was sighted, get the closest one and the distance to it
-	// and set the values for the detected hostile and the move to location
+	// If at least one hostile was sighted, get the closest sighted one and the distance to it
 	TObjectPtr<AActor> ClosestSightedHostileActor = nullptr;
 	float DistanceToClosestActor = TNumericLimits<float>::Max();
 	if (!SightedHostileActors.IsEmpty()) {
-		ClosestSightedHostileActor = 
+		ClosestSightedHostileActor =
 			UGameplayStatics::FindNearestActor(OwnerComp.GetAIOwner()->GetPawn()->GetActorLocation(), SightedHostileActors, DistanceToClosestActor);
-		OwnerComp.GetBlackboardComponent()->SetValueAsObject(DetectedHostileActorKey.SelectedKeyName, ClosestSightedHostileActor);
-		OwnerComp.GetBlackboardComponent()->SetValueAsVector(MoveToLocationKey.SelectedKeyName, ClosestSightedHostileActor->GetActorLocation());
 	}
-	// Else, clear the value for the detected hostile
-	else {
-		OwnerComp.GetBlackboardComponent()->ClearValue(DetectedHostileActorKey.SelectedKeyName);
+
+	// If the sighted hostile in the blackboard is different from the closest sighted one,
+	// update the value in the blackboard
+	TObjectPtr<AActor> LatestSightedHostileActor = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(DetectedHostileActorKey.SelectedKeyName));
+	if (LatestSightedHostileActor != ClosestSightedHostileActor) {
+		OwnerComp.GetBlackboardComponent()->SetValueAsObject(DetectedHostileActorKey.SelectedKeyName, ClosestSightedHostileActor);
+
+		// If sight of hostile actors was lost
+		// set the move to location to the predicted location of the last hostile seen
+		if (!ClosestSightedHostileActor) {
+			FVector LastHostileLocation = AIPerceptionComponent->GetActorInfo(*LatestSightedHostileActor)->GetStimulusLocation(UAISense::GetSenseID<UAISense_Sight>());
+			FVector HostilePredictedLocation = GetActorPredictedLocation(LastHostileLocation, LatestSightedHostileActor);
+			OwnerComp.GetBlackboardComponent()->SetValueAsVector(
+				MoveToLocationKey.SelectedKeyName,
+				HostilePredictedLocation);
+		}
 	}
 
 	float SecondsSinceEnemyInvestigationStart =
@@ -83,4 +94,31 @@ void UBTServiceSight::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 	default:
 		break;
 	}
+}
+
+FVector UBTServiceSight::GetActorPredictedLocation(FVector& ActorPreviousKnownLocation, TObjectPtr<AActor> ActorToPredict) const
+{
+	// Get the initial predicted location
+	FVector PredictedLocation = ActorPreviousKnownLocation + ActorToPredict->GetVelocity().GetSafeNormal() * LocationPredictionDistance;
+
+	// Set up rest of the parameters for a trace
+	FHitResult HitResult;
+	ECollisionChannel CollisionChannel = ActorToPredict->GetRootComponent()->GetCollisionObjectType();
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(ActorToPredict);
+
+	// If there is something between the latest and predicted location the actor would collide with,
+	// set the hit location as the predicted location
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, ActorPreviousKnownLocation, PredictedLocation, CollisionChannel, Params)) {
+		PredictedLocation = HitResult.Location;
+	}
+	
+	// If the predicted location can be projected to the nav mesh, return to projected location
+	FNavLocation ProjectedLocation;
+	if (UNavigationSystemV1::GetCurrent(GetWorld())->ProjectPointToNavigation(PredictedLocation, ProjectedLocation)) {
+		return ProjectedLocation.Location;
+	}
+
+	// Else, just return the previous known location
+	return ActorPreviousKnownLocation;
 }

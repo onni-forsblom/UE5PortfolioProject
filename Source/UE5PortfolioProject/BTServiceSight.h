@@ -25,6 +25,9 @@ protected:
 	UPROPERTY(Category = Service, EditAnywhere, meta = (ClampMin = "0"))
 	float SecondsFromInvestigationStartToFullySpot = 1;
 
+	UPROPERTY(Category = Service, EditAnywhere, meta = (ClampMin = "0"))
+	float LocationPredictionDistance = 200;
+
 	UPROPERTY(Category = Service, EditAnywhere)
 	FBlackboardKeySelector DetectedHostileActorKey;
 
@@ -38,4 +41,10 @@ protected:
 	FBlackboardKeySelector SecondsSinceEnemyInvestigationStartKey;
 
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+
+private:
+
+	// Return the actor's predicted location (that can be navigated to)
+	// based on its initial location, direction and collision
+	FVector GetActorPredictedLocation(FVector& ActorPreviousKnownLocation, TObjectPtr<AActor> ActorToPredict) const;
 };
