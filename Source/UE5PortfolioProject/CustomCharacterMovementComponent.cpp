@@ -53,7 +53,7 @@ void UCustomCharacterMovementComponent::FSavedMove_Custom::SetMoveFor(ACharacter
 {
 	// Set the saved move with the variables from the movement component
 	Super::SetMoveFor(C, InDeltaTime, NewAccel, ClientData);
-	UCustomCharacterMovementComponent* CharacterMovement = Cast<UCustomCharacterMovementComponent>(C->GetCharacterMovement());
+	TObjectPtr<UCustomCharacterMovementComponent> CharacterMovement = Cast<UCustomCharacterMovementComponent>(C->GetCharacterMovement());
 
 	// Include teleportation
 	bSavedWantsToTeleport = CharacterMovement->bWantsToTeleport;
@@ -68,7 +68,7 @@ void UCustomCharacterMovementComponent::FSavedMove_Custom::PrepMoveFor(ACharacte
 {
 	// Set the character movement component with variables from saved move
 	Super::PrepMoveFor(C);
-	UCustomCharacterMovementComponent* CharacterMovement = Cast<UCustomCharacterMovementComponent>(C->GetCharacterMovement());
+	TObjectPtr<UCustomCharacterMovementComponent> CharacterMovement = Cast<UCustomCharacterMovementComponent>(C->GetCharacterMovement());
 
 	// Include teleportation
 	CharacterMovement->bWantsToTeleport = bSavedWantsToTeleport;
@@ -95,7 +95,7 @@ FNetworkPredictionData_Client* UCustomCharacterMovementComponent::GetPredictionD
 
 	if (ClientPredictionData == nullptr)
 	{
-		UCustomCharacterMovementComponent* MutableThis = const_cast<UCustomCharacterMovementComponent*>(this);
+		TObjectPtr<UCustomCharacterMovementComponent> MutableThis = const_cast<UCustomCharacterMovementComponent*>(this);
 		MutableThis->ClientPredictionData = new FNetworkPredictionData_Client_Custom(*this);
 	}
 
@@ -239,20 +239,20 @@ bool UCustomCharacterMovementComponent::CanWallJump() const
 		Start 
 		+ UpdatedComponent->GetForwardVector() 
 		* CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleRadius()/FMath::Sin(FMath::DegreesToRadians(90 - MaxWallJumpAngle));
-	const FName ProfileName = "BlockAll";
+	ECollisionChannel CollisionChannel = GetOwner()->GetRootComponent()->GetCollisionObjectType();
 
 	// Ignore the owning actor during linetrace
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetOwner());
 
-	GetWorld()->LineTraceSingleByProfile(OutHit, Start, End, ProfileName, Params);
+	GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, CollisionChannel, Params);
 
 	if (OutHit.bBlockingHit 
 		&& OutHit.GetComponent()->IsA(UStaticMeshComponent::StaticClass())) {
 		// If a static mesh component was hit, check if the player is close enough to the wall
 		// if not, return false
 		End = Start - OutHit.Normal * CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleRadius() * WallJumpCapsuleRadiusScale;
-		GetWorld()->LineTraceSingleByProfile(OutHit, Start, End, ProfileName, Params);
+		GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, CollisionChannel, Params);
 		if (!OutHit.bBlockingHit) {
 			return false;
 		}
