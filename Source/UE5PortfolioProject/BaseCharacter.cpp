@@ -6,6 +6,7 @@
 ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	GetComponentByClass<USkeletalMeshComponent>()->SetRenderCustomDepth(true);
 }
 
 // Called when the game starts or when spawned

@@ -13,6 +13,7 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "SpecialVisionComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -58,6 +59,8 @@ AUE5PortfolioProjectCharacter::AUE5PortfolioProjectCharacter(const FObjectInitia
 	AIStimuliSourceComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("AIStimuliSource"));
 	AIStimuliSourceComponent->RegisterForSense(UAISense_Sight::StaticClass());
 	AIStimuliSourceComponent->RegisterWithPerceptionSystem();
+
+	SpecialVisionComponent = CreateDefaultSubobject<USpecialVisionComponent>(TEXT("SpecialVisionComponent"));
 }
 
 void AUE5PortfolioProjectCharacter::BeginPlay()
@@ -137,6 +140,9 @@ void AUE5PortfolioProjectCharacter::SetupPlayerInputComponent(class UInputCompon
 
 		//Shooting a projectile
 		EnhancedInputComponent->BindAction(ProjectileShootAction, ETriggerEvent::Triggered, this, &AUE5PortfolioProjectCharacter::ShootProjectile);
+
+		//Toggling special vision
+		EnhancedInputComponent->BindAction(SpecialVisionToggleAction, ETriggerEvent::Triggered, SpecialVisionComponent, &USpecialVisionComponent::ToggleVision);
 
 		// Teleporting & rewinding with the custom movement component
 		UCustomCharacterMovementComponent* CustomMovementComponent = Cast<UCustomCharacterMovementComponent>(GetCharacterMovement());

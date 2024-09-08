@@ -60,6 +60,13 @@ class AUE5PortfolioProjectCharacter : public ABaseCharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> ProjectileShootAction;
 
+	/* Special vision toggle Input Action*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> SpecialVisionToggleAction;
+
+	UPROPERTY(EditAnywhere)
+	class USpecialVisionComponent* SpecialVisionComponent;
+
 	/* The amount by which movement input can change before no longer following faced direction after a wall jump */
 	UPROPERTY(EditDefaultsOnly, Category = Input, meta = (ClampMin = "0"))
 	float MoveInFacedDirectionThreshold = 0.1f;

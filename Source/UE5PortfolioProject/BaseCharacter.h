@@ -17,6 +17,7 @@ public:
 	FGenericTeamId TeamId = FGenericTeamId(0);
 
 	// Sets default values for this character's properties
+	// Sets the character's skeletal mesh to render custom depth
 	ABaseCharacter(const FObjectInitializer& ObjectInitializer);
 
 	virtual FGenericTeamId GetGenericTeamId() const override { return TeamId; };
