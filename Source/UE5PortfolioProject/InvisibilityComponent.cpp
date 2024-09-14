@@ -27,15 +27,19 @@ void UInvisibilityComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
 {
 	Super::OnComponentDestroyed(bDestroyingHierarchy);
 
-	// If the cached world pointer is not valid, do nothing
+	// If the cached world pointer or the actor visibility world subsystem is not valid,
+	// do nothing
 
 	TObjectPtr<UWorld> World = GetWorld();
 	if (!World) {
 		return;
 	}
 
-	// Remove this component's owner from the globally available array of actors with invisibility components
-
 	TObjectPtr<UActorVisibilityWorldSubsystem> ActorVisibilityWorldSubsystem = World->GetSubsystem<UActorVisibilityWorldSubsystem>();
+	if (!ActorVisibilityWorldSubsystem) {
+		return;
+	}
+
+	// Remove this component's owner from the globally available array of actors with invisibility components
 	ActorVisibilityWorldSubsystem->ActorsWithInvisibilityComponent.Remove(GetOwner());
 }
