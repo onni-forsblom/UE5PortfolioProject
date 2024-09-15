@@ -90,7 +90,7 @@ void USpecialVisionComponent::SetActorsVisibilities()
 		// If the special vision is on and the actor is visible to its vision type
 		// OR if the special vision is off but the actor can be seen with regular vision,
 		// unhide the actor from the player
-		if ((bVisionIsActive && InvisibilityComponent->VisionTypesVisibleTo.Contains(SpecialVision.VisionType))
+		if ((bVisionIsActive && InvisibilityComponent->VisionTypesVisibleTo.Contains(StaticCast<TEnumAsByte<EVisionType>>(SpecialVision.VisionType)))
 			|| (!bVisionIsActive && InvisibilityComponent->VisionTypesVisibleTo.Contains(EVisionType::Regular))) {
 			OwnerPlayerController->HiddenActors.Remove(Actor);
 		}

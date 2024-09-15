@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "VisionType.h"
 #include "InvisibilityComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -15,7 +16,7 @@ public:
 
 	// Set of vision types this actor is visible to
 	UPROPERTY(EditAnywhere)
-	TSet<TEnumAsByte<enum EVisionType>> VisionTypesVisibleTo;
+	TSet<TEnumAsByte<EVisionType>> VisionTypesVisibleTo;
 
 	// Sets default values for this component's properties
 	UInvisibilityComponent();

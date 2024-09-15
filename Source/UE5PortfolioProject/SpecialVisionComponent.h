@@ -4,13 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "VisionType.h"
 #include "SpecialVisionComponent.generated.h"
 
-UENUM(BlueprintType)
-enum EVisionType : uint8 {
-	Regular,
-	Thermal
-};
 
 USTRUCT(BlueprintType)
 struct FSpecialVision
