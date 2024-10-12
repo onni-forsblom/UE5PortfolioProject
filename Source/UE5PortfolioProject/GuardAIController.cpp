@@ -7,6 +7,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BlackboardKeyNames.h"
 #include "SuspicionLevelEnum.h"
+#include "TeamComponent.h"
 
 AGuardAIController::AGuardAIController()
 {
@@ -22,6 +23,15 @@ AGuardAIController::AGuardAIController()
 	AIPerceptionComponent->ConfigureSense(*HearingConfig);
 }
 
+ETeamAttitude::Type AGuardAIController::GetTeamAttitudeTowards(const AActor& Other) const
+{
+	TObjectPtr<UTeamComponent> OtherTeamComponent = Other.GetComponentByClass<UTeamComponent>();
+	if (!OtherTeamComponent) {
+		return Super::GetTeamAttitudeTowards(Other);
+	}
+	return FGenericTeamId::GetAttitude(GetGenericTeamId(), OtherTeamComponent->TeamId);
+}
+
 void AGuardAIController::HandleNoiseStimuli(FVector NoiseLocation)
 {
 	// If the AI is not suspicious of anything and a suspicious noise is heard,
@@ -31,10 +41,4 @@ void AGuardAIController::HandleNoiseStimuli(FVector NoiseLocation)
 		GetBlackboardComponent()->SetValueAsEnum(UBlackboardKeyNames::GetSuspicionLevelKeyName(), ESuspicionLevel::InvestigatingDistraction);
 		GetBlackboardComponent()->SetValueAsVector(UBlackboardKeyNames::GetMoveToLocationKeyName(), NoiseLocation);
 	}
-}
-
-FGenericTeamId AGuardAIController::GetGenericTeamId() const
-{
-	auto TeamAgent = Cast<IGenericTeamAgentInterface>(GetPawn());
-	return TeamAgent ? TeamAgent->GetGenericTeamId() : FGenericTeamId::NoTeam;
 }

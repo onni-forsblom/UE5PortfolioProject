@@ -2,31 +2,19 @@
 
 
 #include "BaseCharacter.h"
+#include "TeamComponent.h"
 
 ABaseCharacter::ABaseCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	GetComponentByClass<USkeletalMeshComponent>()->SetRenderCustomDepth(true);
+	TeamComponent = CreateDefaultSubobject<UTeamComponent>("TeamComponent");
 }
 
-// Called when the game starts or when spawned
-void ABaseCharacter::BeginPlay()
+FGenericTeamId ABaseCharacter::GetGenericTeamId() const
 {
-	Super::BeginPlay();
-	
+	if (TeamComponent) {
+		return TeamComponent->TeamId;
+	}
+	return FGenericTeamId::NoTeam;
 }
-
-// Called every frame
-void ABaseCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-// Called to bind functionality to input
-void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-

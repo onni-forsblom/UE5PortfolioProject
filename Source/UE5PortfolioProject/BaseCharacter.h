@@ -13,24 +13,16 @@ class UE5PORTFOLIOPROJECT_API ABaseCharacter : public ACharacter, public IGeneri
 	GENERATED_BODY()
 
 public:
+
+	// Component for setting the character's team and keeping track of it
 	UPROPERTY(EditAnywhere)
-	FGenericTeamId TeamId = FGenericTeamId(0);
+	TObjectPtr<class UTeamComponent> TeamComponent;	
 
 	// Sets default values for this character's properties
 	// Sets the character's skeletal mesh to render custom depth
 	ABaseCharacter(const FObjectInitializer& ObjectInitializer);
 
-	virtual FGenericTeamId GetGenericTeamId() const override { return TeamId; };
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	// Returns the team id from the team component
+	// If it is invalid, returns team id for no team
+	virtual FGenericTeamId GetGenericTeamId() const override;
 };

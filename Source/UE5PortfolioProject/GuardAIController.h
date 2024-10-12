@@ -18,7 +18,9 @@ public:
 
 	AGuardAIController();
 
-	virtual FGenericTeamId GetGenericTeamId() const override;
+	// Gets the team attitude towards the other actor via team component
+	// If the other actor has no team component, uses the super method
+	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 
 protected:
 
