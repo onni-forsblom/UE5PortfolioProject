@@ -16,10 +16,10 @@ AGuardAIController::AGuardAIController()
 	SetPerceptionComponent(*AIPerceptionComponent);
 
 	// Create and configure the senses
-	UAISenseConfig_Sight* SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("AISightConfig"));
+	TObjectPtr<UAISenseConfig_Sight> SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("AISightConfig"));
 	AIPerceptionComponent->ConfigureSense(*SightConfig);
 
-	UAISenseConfig_Hearing* HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("AIHearingConfig"));
+	TObjectPtr<UAISenseConfig_Hearing> HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("AIHearingConfig"));
 	AIPerceptionComponent->ConfigureSense(*HearingConfig);
 }
 
