@@ -61,6 +61,8 @@ void USpecialVisionComponent::ToggleVision()
 
 void USpecialVisionComponent::BeginPlay()
 {
+	Super::BeginPlay();
+
 	SetActorsVisibilities();
 }
 
