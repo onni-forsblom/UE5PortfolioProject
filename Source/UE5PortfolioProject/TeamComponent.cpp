@@ -18,15 +18,13 @@ void UTeamComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Make sure the team world subsystem has a set for the actors belonging to the owner's team
-	// Then add the owner to the set
-
-	TObjectPtr<UTeamWorldSubsystem> TeamWorldSubsystem = GetWorld()->GetSubsystem<UTeamWorldSubsystem>();
-	TSet<TObjectPtr<AActor>>& TeamActors =  TeamWorldSubsystem->ActorsByTeamId.FindOrAdd(TeamId.GetId());
-	TeamActors.Add(GetOwner());
-
 	// If the owner is a pawn, try to set the pawn's controller's team id
 	SetControllerTeamId(TeamId);
+
+	// Register owner to the desired team
+
+	TObjectPtr<UTeamWorldSubsystem> TeamWorldSubsystem = GetWorld()->GetSubsystem<UTeamWorldSubsystem>();
+	TeamWorldSubsystem->RegisterActorToTeam(TeamId, *GetOwner());
 }
 
 void UTeamComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
@@ -47,21 +45,9 @@ void UTeamComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
 		return;
 	}
 
-	// Remove the owner from the team world subsystem's set of actors belonging to the owner's team
-	// (If there is a valid set)
+	// Unregister owner from its team
 
-	TSet<TObjectPtr<AActor>>* TeamActors = TeamWorldSubsystem->ActorsByTeamId.Find(TeamId.GetId());
-
-	if (!TeamActors) {
-		return;
-	}
-
-	TeamActors->Remove(GetOwner());
-
-	// If the set is now empty, remove it from the team world subsystem's map of sets
-	if (TeamActors->IsEmpty()) {
-		TeamWorldSubsystem->ActorsByTeamId.Remove(TeamId.GetId());
-	}
+	TeamWorldSubsystem->UnregisterActorFromTeam(TeamId, *GetOwner());
 }
 
 void UTeamComponent::SetControllerTeamId(FGenericTeamId NewTeamId)

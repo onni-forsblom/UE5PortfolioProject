@@ -6,6 +6,8 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "TeamWorldSubsystem.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FActorTeamRegistering, uint8, TeamId, AActor*, RegisteredActor);
+
 /**
  * 
  */
@@ -16,6 +18,14 @@ class UE5PORTFOLIOPROJECT_API UTeamWorldSubsystem : public UWorldSubsystem
 	
 public:
 
-	// Map containing sets of actors belonging to each team by id
-	TMap<uint8, TSet<TObjectPtr<AActor>>> ActorsByTeamId;
+	FActorTeamRegistering OnActorRegistered;
+	FActorTeamRegistering OnActorUnregistered;
+
+	void RegisterActorToTeam(uint8 TeamId, AActor& ActorToRegister);
+
+	void UnregisterActorFromTeam(uint8 TeamId, AActor& ActorToUnregister);
+
+private:
+
+	TMap<uint8, TSet<TObjectPtr<AActor>>> TeamIdToActorsMap;
 };
