@@ -8,6 +8,7 @@
 #include "BlackboardKeyNames.h"
 #include "SuspicionLevelEnum.h"
 #include "TeamComponent.h"
+#include "TeamWorldSubsystem.h"
 
 AGuardAIController::AGuardAIController()
 {

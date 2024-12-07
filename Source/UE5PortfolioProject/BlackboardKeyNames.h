@@ -21,4 +21,10 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	static FName GetSuspicionLevelKeyName() { return "SuspicionLevel"; };
+
+	UFUNCTION(BlueprintPure)
+	static FName GetReportingStatusKeyName() { return "ReportingStatus"; };
+
+	UFUNCTION(BlueprintPure)
+	static FName GetDetectedHostileActorKeyName() { return "DetectedHostileActor"; };
 };
